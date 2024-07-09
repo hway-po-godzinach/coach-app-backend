@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateTrainingProgramDto } from './dto/create-training-program.dto';
-import { UpdateTrainingProgramDto } from './dto/update-training-program.dto';
+import { CreateTrainingProgramDto, UpdateTrainingProgramDto, DuplicateTrainingProgramDto } from './dto/';
 import { TrainingProgramRepository } from './training-program.repository';
 
 @Injectable()
@@ -16,6 +15,12 @@ export class TrainingProgramService {
 		};
 
 		return this.trainingProgramRepository.create(program);
+	}
+
+	duplicate(programId: string, duplicateTrainingProgramDto: DuplicateTrainingProgramDto) {
+		const { name: duplicatedProgramName } = duplicateTrainingProgramDto;
+
+		return this.trainingProgramRepository.duplicate(programId, duplicatedProgramName);
 	}
 
 	findAll() {
@@ -39,5 +44,13 @@ export class TrainingProgramService {
 
 	remove(id: string) {
 		return this.trainingProgramRepository.remove({ id });
+	}
+
+	addWeek(programId: string) {
+		return this.trainingProgramRepository.addWeek(programId);
+	}
+
+	removeWeek(programId: string, weekId: string) {
+		return this.trainingProgramRepository.removeWeek(programId, weekId);
 	}
 }

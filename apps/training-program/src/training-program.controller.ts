@@ -1,7 +1,6 @@
 import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
 import { TrainingProgramService } from './training-program.service';
-import { CreateTrainingProgramDto } from './dto/create-training-program.dto';
-import { UpdateTrainingProgramDto } from './dto/update-training-program.dto';
+import { CreateTrainingProgramDto, UpdateTrainingProgramDto, DuplicateTrainingProgramDto } from './dto/';
 
 @Controller('program')
 export class TrainingProgramController {
@@ -10,6 +9,11 @@ export class TrainingProgramController {
 	@Post()
 	create(@Body() createTrainingProgramDto: CreateTrainingProgramDto) {
 		return this.trainingProgramService.create(createTrainingProgramDto);
+	}
+
+	@Post(':programId/duplicate')
+	duplicate(@Param('programId') programId: string, @Body() duplicateTrainingProgramDto: DuplicateTrainingProgramDto) {
+		return this.trainingProgramService.duplicate(programId, duplicateTrainingProgramDto);
 	}
 
 	@Get()
@@ -30,5 +34,15 @@ export class TrainingProgramController {
 	@Delete(':id')
 	remove(@Param('id') id: string) {
 		return this.trainingProgramService.remove(id);
+	}
+
+	@Post(':programId/weeks')
+	addWeek(@Param('programId') programId: string) {
+		return this.trainingProgramService.addWeek(programId);
+	}
+
+	@Delete(':programId/weeks/:weekId')
+	removeWeek(@Param('programId') programId: string, @Param('weekId') weekId: string) {
+		return this.trainingProgramService.removeWeek(programId, weekId);
 	}
 }
