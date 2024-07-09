@@ -7,10 +7,45 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Program {
+model Exercise {
   id          String   @id @default(cuid())
   name        String
-  description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  days        DayExercise[]
+}
+
+model Day {
+  id          String   @id @default(cuid())
+  type        String
+  exercises   DayExercise[]
+  weekId      String
+  week        Week      @relation(fields: [weekId], references: [id])
+}
+
+model DayExercise {
+  id        String   @id @default(cuid())
+  dayId     String
+  exerciseId String
+
+  day       Day      @relation(fields: [dayId], references: [id])
+  exercise  Exercise @relation(fields: [exerciseId], references: [id])
+
+  @@unique([dayId, exerciseId])
+}
+
+model Week {
+  id    String @id @default(cuid())
+  days  Day[]
+  programId String
+  program Program @relation(fields: [programId], references: [id])
+}
+
+model Program {
+  id        String @id @default(cuid())
+  name      String
+  description String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  weeks     Week[]
 }
