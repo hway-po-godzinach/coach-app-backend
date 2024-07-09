@@ -28,7 +28,19 @@ export class TrainingProgramService {
 	}
 
 	findOne(id: string) {
-		return this.trainingProgramRepository.findOne({ id });
+		const include = {
+			weeks: {
+				include: {
+					days: {
+						include: {
+							exercises: true,
+						},
+					},
+				},
+			},
+		};
+
+		return this.trainingProgramRepository.findOne({ id }, include);
 	}
 
 	update(id: string, updateTrainingProgramDto: UpdateTrainingProgramDto) {

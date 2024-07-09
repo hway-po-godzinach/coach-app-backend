@@ -46,8 +46,8 @@ export abstract class AbstractRepository<T extends { id: string }> {
 		return found;
 	}
 
-	async findOne(filterQuery: Partial<Record<keyof T, any>>): Promise<T | null> {
-		const result = await this.model.findUnique({ where: filterQuery });
+	async findOne(filterQuery: Partial<Record<keyof T, any>>, include?: any): Promise<T | null> {
+		const result = await this.model.findUnique({ where: filterQuery, include });
 
 		if (!result) {
 			this.throwNotFoundException(filterQuery);
