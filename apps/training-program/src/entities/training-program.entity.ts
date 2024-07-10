@@ -31,3 +31,11 @@ export class TrainingExercise {
 	createdAt: Date;
 	updatedAt: Date;
 }
+
+export class Exercise {
+	id: string;
+	name: string;
+	description: string;
+	createdAt: Date;
+	updatedAt: Date;
+}

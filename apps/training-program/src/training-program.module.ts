@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
-import { TrainingProgramService, WeekService } from './services/';
-import { TrainingProgramController } from './controllers/training-program.controller';
+import { TrainingProgramController, WeekController, ExerciseController } from './controllers/';
+import { TrainingProgramService, WeekService, ExerciseService } from './services/';
 import { TrainingProgramRepository } from './training-program.repository';
 import { PrismaModule } from '@app/common/prisma';
 
 @Module({
 	imports: [PrismaModule],
-	controllers: [TrainingProgramController],
-	providers: [TrainingProgramService, WeekService, TrainingProgramRepository],
+	controllers: [TrainingProgramController, WeekController, ExerciseController],
+	providers: [TrainingProgramService, WeekService, ExerciseService, TrainingProgramRepository],
 })
 export class TrainingProgramModule {}

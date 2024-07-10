@@ -17,6 +17,7 @@ export class TrainingProgramRepository extends AbstractRepository<TrainingProgra
 		return 'Training program';
 	}
 
+	//PROGRAMS
 	async duplicate(programId: string, duplicatedProgramName: string) {
 		const include = {
 			weeks: {
@@ -74,6 +75,7 @@ export class TrainingProgramRepository extends AbstractRepository<TrainingProgra
 		return newProgram;
 	}
 
+	//WEEKS
 	async addWeek(programId: string) {
 		const program = await this.findOneOrFail({ id: programId });
 
@@ -170,6 +172,56 @@ export class TrainingProgramRepository extends AbstractRepository<TrainingProgra
 		await this.prisma.week.delete({
 			where: {
 				id: weekId,
+			},
+		});
+	}
+
+	//EXERCISES
+	async findAllExercises() {
+		const exercises = await this.prisma.exercise.findMany();
+
+		return exercises;
+	}
+
+	async findOneExercise(exerciseId: string) {
+		const exercise = await this.prisma.exercise.findUnique({
+			where: {
+				id: exerciseId,
+			},
+		});
+
+		if (!exercise) {
+			this.throwNotFoundException({ id: exerciseId });
+		}
+
+		return exercise;
+	}
+
+	async createExercise(name: string, description: string) {
+		const exercise = await this.prisma.exercise.create({
+			data: {
+				name,
+				description,
+			},
+		});
+
+		return exercise;
+	}
+
+	async removeExercise(exerciseId: string) {
+		const exercise = await this.prisma.exercise.findUnique({
+			where: {
+				id: exerciseId,
+			},
+		});
+
+		if (!exercise) {
+			this.throwNotFoundException({ id: exerciseId });
+		}
+
+		await this.prisma.exercise.delete({
+			where: {
+				id: exerciseId,
 			},
 		});
 	}
