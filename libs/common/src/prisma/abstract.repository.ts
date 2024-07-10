@@ -17,15 +17,15 @@ export abstract class AbstractRepository<T extends { id: string }> {
 		throw new NotFoundException(errorMessage);
 	}
 
-	async create(data: Partial<T>): Promise<T> {
-		const created = await this.model.create({ data });
+	async create(data: Partial<T>, include?: any): Promise<T> {
+		const created = await this.model.create({ data }, include);
 
 		this.prisma.log('info', `${this.repositoryName}: Entity created`, created);
 		return created;
 	}
 
-	async findAll(): Promise<T[]> {
-		const found = await this.model.findMany();
+	async findAll(include?: any): Promise<T[]> {
+		const found = await this.model.findMany({ include });
 
 		this.prisma.log('info', `${this.repositoryName}: Entities found`, found);
 		return found;
@@ -33,13 +33,15 @@ export abstract class AbstractRepository<T extends { id: string }> {
 
 	async findMany(
 		filterQuery: Partial<Record<keyof T, any>> = {},
-		paginationQuery: { skip?: number; take?: number } = {}
+		paginationQuery: { skip?: number; take?: number } = {},
+		include?: any
 	): Promise<T[]> {
 		const { skip, take } = paginationQuery;
 		const found = await this.model.findMany({
 			where: filterQuery,
 			skip,
 			take,
+			include,
 		});
 
 		this.prisma.log('info', `${this.repositoryName}: Entities found`, found);
@@ -56,8 +58,8 @@ export abstract class AbstractRepository<T extends { id: string }> {
 		return result;
 	}
 
-	async findOneOrFail(filterQuery: Partial<Record<keyof T, any>>): Promise<T> {
-		const result = await this.findOne(filterQuery);
+	async findOneOrFail(filterQuery: Partial<Record<keyof T, any>>, include?: any): Promise<T> {
+		const result = await this.findOne(filterQuery, include);
 
 		if (!result) {
 			this.throwNotFoundException(filterQuery);
@@ -66,7 +68,7 @@ export abstract class AbstractRepository<T extends { id: string }> {
 		return result;
 	}
 
-	async update(filterQuery: Partial<Record<keyof T, any>>, data: Partial<T>): Promise<T> {
+	async update(filterQuery: Partial<Record<keyof T, any>>, data: Partial<T>, include?: any): Promise<T> {
 		const result = await this.model.findUnique({ where: filterQuery });
 
 		if (!result) {
@@ -76,6 +78,7 @@ export abstract class AbstractRepository<T extends { id: string }> {
 		const updated = await this.model.update({
 			where: filterQuery,
 			data,
+			include,
 		});
 
 		this.prisma.log('info', `${this.repositoryName}: Entity updated`, updated);

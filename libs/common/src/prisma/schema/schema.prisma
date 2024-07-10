@@ -37,6 +37,7 @@ model DayExercise {
 model Week {
   id    String @id @default(cuid())
   days  Day[]
+  order Int
   programId String
   program Program @relation(fields: [programId], references: [id])
 }

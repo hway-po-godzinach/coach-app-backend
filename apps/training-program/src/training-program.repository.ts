@@ -18,7 +18,19 @@ export class TrainingProgramRepository extends AbstractRepository<TrainingProgra
 	}
 
 	async duplicate(programId: string, duplicatedProgramName: string) {
-		const program = await this.findOneOrFail({ id: programId });
+		const include = {
+			weeks: {
+				include: {
+					days: {
+						include: {
+							exercises: true,
+						},
+					},
+				},
+			},
+		};
+
+		const program = await this.findOneOrFail({ id: programId }, include);
 
 		if (!program) {
 			return;
@@ -31,15 +43,13 @@ export class TrainingProgramRepository extends AbstractRepository<TrainingProgra
 				weeks: {
 					create: program.weeks?.map(week => {
 						return {
+							order: week.order,
 							days: {
 								create: week.days?.map(day => {
 									return {
+										type: day.type,
 										exercises: {
-											create: day.exercises.map(exercise => {
-												return {
-													name: exercise.name,
-												};
-											}),
+											//TODO: Add exercises
 										},
 									};
 								}),
@@ -75,6 +85,58 @@ export class TrainingProgramRepository extends AbstractRepository<TrainingProgra
 			data: {
 				programId: programId,
 				days: {},
+				order: program.weeks.length + 1,
+			},
+			include: {
+				days: {
+					include: {
+						exercises: true,
+					},
+				},
+			},
+		});
+
+		return newWeek;
+	}
+
+	async duplicateWeek(programId: string, weekId: string) {
+		const program = await this.findOneOrFail({ id: programId });
+
+		if (!program) {
+			return;
+		}
+
+		const week = await this.prisma.week.findUnique({
+			where: {
+				id: weekId,
+			},
+			include: {
+				days: {
+					include: {
+						exercises: true,
+					},
+				},
+			},
+		});
+
+		if (!week) {
+			this.throwNotFoundException({ id: weekId });
+		}
+
+		const newWeek = await this.prisma.week.create({
+			data: {
+				programId: programId,
+				days: {
+					create: week.days.map(day => {
+						return {
+							type: day.type,
+							exercises: {
+								//TODO: Add exercises
+							},
+						};
+					}),
+				},
+				order: program.weeks.length + 1,
 			},
 			include: {
 				days: {

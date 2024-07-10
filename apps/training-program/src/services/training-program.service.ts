@@ -1,6 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { CreateTrainingProgramDto, UpdateTrainingProgramDto, DuplicateTrainingProgramDto } from './dto/';
-import { TrainingProgramRepository } from './training-program.repository';
+import { CreateTrainingProgramDto, UpdateTrainingProgramDto, DuplicateTrainingProgramDto } from '../dto/';
+import { TrainingProgramRepository } from '../training-program.repository';
+
+const include = {
+	weeks: {
+		include: {
+			days: {
+				include: {
+					exercises: true,
+				},
+			},
+		},
+	},
+};
 
 @Injectable()
 export class TrainingProgramService {
@@ -24,22 +36,10 @@ export class TrainingProgramService {
 	}
 
 	findAll() {
-		return this.trainingProgramRepository.findAll();
+		return this.trainingProgramRepository.findAll(include);
 	}
 
 	findOne(id: string) {
-		const include = {
-			weeks: {
-				include: {
-					days: {
-						include: {
-							exercises: true,
-						},
-					},
-				},
-			},
-		};
-
 		return this.trainingProgramRepository.findOne({ id }, include);
 	}
 
@@ -51,18 +51,10 @@ export class TrainingProgramService {
 			description,
 		};
 
-		return this.trainingProgramRepository.update({ id }, updateProgram);
+		return this.trainingProgramRepository.update({ id }, updateProgram, include);
 	}
 
 	remove(id: string) {
 		return this.trainingProgramRepository.remove({ id });
-	}
-
-	addWeek(programId: string) {
-		return this.trainingProgramRepository.addWeek(programId);
-	}
-
-	removeWeek(programId: string, weekId: string) {
-		return this.trainingProgramRepository.removeWeek(programId, weekId);
 	}
 }

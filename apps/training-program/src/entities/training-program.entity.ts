@@ -12,6 +12,7 @@ export class TrainingWeek {
 	programId: string;
 	program: TrainingProgram;
 	days: TrainingDay[];
+	order: number;
 }
 
 export class TrainingDay {
