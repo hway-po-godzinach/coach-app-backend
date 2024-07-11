@@ -1,4 +1,16 @@
 services:
+  program:
+    container_name: program-microservice
+    build:
+      context: .
+      dockerfile: apps\training-program\Dockerfile
+    ports:
+      - '4001:4001'
+    depends_on:
+      - postgres
+    environment:
+      - .env
+
   postgres:
     image: postgres:latest
     container_name: coach-app-postgres
